@@ -1,30 +1,54 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <list>
 
 using namespace std;
 
-int main(void) {
-    string myText;
-    ifstream infile("/home/justin/projects/aoc_2021/day1/input.txt");
+void readFile(const char* filename, list<string>& lines) {
+    lines.clear();
+    ifstream file(filename);
+    string s;
+    while(getline(file, s))
+        lines.push_back(s);
+}
 
-    if (!infile.is_open()) {
-        cerr << "Error opening file" << endl;
-        return 1;
-    }
- 
+int main(void) {
+    const char* filename = "/home/justin/projects/aoc_2021/day1/input.txt";
+    list<string> lines;
+    readFile(filename, lines);
+
     int last = -1;
     int count = 0;
-    while (getline (infile, myText)) {
-        int curr = stoi(myText);
-        if (last < curr && last != -1) {
+    for (const auto& line : lines) {
+        int curr = stoi(line);
+        if (curr > last && last != -1) {
             count++;
         }
         last = curr;
     }
 
-    cout << count << endl;
+    cout << "Part One: " << count << endl;
 
-    infile.close();
+    // Part Two
+    count = 0;
+    auto l_front = lines.begin();
+    int total = 0;
+    int curr_sum = 0;
+    int last_sum = 0;
+    while (total < lines.size()) {
+        for (int i = 1; i < 5; i++) {
+            advance(l_front, 1);
+            curr_sum = curr_sum + stoi(*l_front);
+        }
+        total = total + 4;
+
+        if (last_sum < curr_sum && last_sum != 0) {
+            count++;
+        }
+        last_sum = curr_sum;
+    }
+
+    cout << count << endl;
     return 0;
 }
